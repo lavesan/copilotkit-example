@@ -1,0 +1,89 @@
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { useSelector } from "react-redux";
+import { Task, TasksState } from "./types";
+
+const initialState: TasksState = {
+  tasks: [],
+  status: "idle",
+  error: null,
+  filters: {
+    priority: [],
+    status: [],
+    tags: [],
+    search: "",
+  },
+  focusMode: {
+    active: false,
+    taskId: null,
+  },
+};
+
+// Exemplo de estrutura (não código real)
+export const tasksSlice = createSlice({
+  name: "tasks",
+  initialState,
+  reducers: {
+    // Task CRUD
+    addTask: (state, action: PayloadAction<Task>) => {
+      state.tasks.push(action.payload);
+    },
+    updateTask: (state, action: PayloadAction<Task>) => {
+      const index = state.tasks.findIndex(
+        (task) => task.id === action.payload.id
+      );
+      if (index !== -1) {
+        state.tasks[index] = action.payload;
+      }
+    },
+    deleteTask: (state, action: PayloadAction<string>) => {
+      state.tasks = state.tasks.filter((task) => task.id !== action.payload);
+    },
+
+    // Filters
+    setPriorityFilter: (
+      state,
+      action: PayloadAction<("low" | "medium" | "high")[]>
+    ) => {
+      state.filters.priority = action.payload;
+    },
+    setStatusFilter: (
+      state,
+      action: PayloadAction<("todo" | "in-progress" | "done")[]>
+    ) => {
+      state.filters.status = action.payload;
+    },
+    setTagFilter: (state, action: PayloadAction<string[]>) => {
+      state.filters.tags = action.payload;
+    },
+    setSearchFilter: (state, action: PayloadAction<string>) => {
+      state.filters.search = action.payload;
+    },
+    clearFilters: (state) => {
+      state.filters = initialState.filters;
+    },
+
+    // Focus Mode
+    toggleFocusMode: (state, action: PayloadAction<string | null>) => {
+      state.focusMode.active = !state.focusMode.active;
+      state.focusMode.taskId = action.payload;
+    },
+    clearFocusMode: (state) => {
+      state.focusMode = initialState.focusMode;
+    },
+  },
+});
+
+export const {
+  addTask,
+  updateTask,
+  deleteTask,
+  setPriorityFilter,
+  setStatusFilter,
+  setTagFilter,
+  setSearchFilter,
+  clearFilters,
+  toggleFocusMode,
+  clearFocusMode,
+} = tasksSlice.actions;
+
+export default tasksSlice.reducer;
