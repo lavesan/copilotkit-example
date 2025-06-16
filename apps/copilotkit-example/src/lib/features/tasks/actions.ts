@@ -1,6 +1,11 @@
 "use client";
 
-import { addTask, deleteTask, reorderTasks } from "./tasksSlice";
+import {
+  addTask,
+  deleteTask,
+  reorderTasks,
+  toggleFocusMode,
+} from "./tasksSlice";
 import { Task } from "./types";
 import { v4 as uuidv4 } from "uuid";
 import { AppDispatch, RootState } from "@/lib/store";
@@ -48,5 +53,10 @@ export const createTaskActions = (
   listTasks: async () => {
     const state = getState();
     return state.tasks.tasks;
+  },
+
+  toggleFocusMode: async (taskId: string | null = null) => {
+    dispatch(toggleFocusMode(taskId));
+    return { success: true };
   },
 });

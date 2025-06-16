@@ -9,11 +9,17 @@ export const selectTasksError = (state: RootState) => state.tasks.error;
 export const selectTasksFilters = (state: RootState) => state.tasks.filters;
 export const selectFocusMode = (state: RootState) => state.tasks.focusMode;
 
+const priorityWeight = {
+  high: 3,
+  medium: 2,
+  low: 1,
+};
+
 // Filtered tasks selector
 export const selectFilteredTasks = createSelector(
-  [selectAllTasks, selectTasksFilters],
-  (tasks, filters) => {
-    return tasks.filter((task: Task) => {
+  [selectAllTasks, selectTasksFilters, selectFocusMode],
+  (tasks, filters, focusMode) => {
+    let filteredTasks = tasks.filter((task: Task) => {
       // Priority filter
       if (
         filters.priority.length > 0 &&
@@ -45,6 +51,15 @@ export const selectFilteredTasks = createSelector(
 
       return true;
     });
+
+    // Sort by priority if focus mode is active
+    if (focusMode.active) {
+      filteredTasks = [...filteredTasks].sort(
+        (a, b) => priorityWeight[b.priority] - priorityWeight[a.priority]
+      );
+    }
+
+    return filteredTasks;
   }
 );
 

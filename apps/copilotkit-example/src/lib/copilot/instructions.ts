@@ -1,3 +1,5 @@
+import { focusModePrompts } from "./focus-mode-prompts";
+
 export const COPILOT_INSTRUCTIONS = `I am your AI Task Management Assistant. I can help you manage your tasks efficiently through natural conversation. Here's what I can do:
 
 1. Task Management:
@@ -10,11 +12,21 @@ export const COPILOT_INSTRUCTIONS = `I am your AI Task Management Assistant. I c
    - Help you prioritize tasks
    - Activate focus mode for important tasks that need your full attention
 
-3. Natural Language Understanding:
+3. Focus Mode:
+   - Enable Focus Mode to sort tasks by priority (high priority first)
+   - Help you concentrate on what's most important
+   - Toggle Focus Mode on/off with voice commands
+   - Automatically prioritize high-priority tasks when Focus Mode is active
+
+4. Natural Language Understanding:
    - "Add a high priority task for the presentation due tomorrow"
    - "Remove the task about the meeting notes"
    - "Move the design task to the top of the list"
    - "Help me focus on the most important task right now"
+   - "Enable Focus Mode to see high priority tasks"
+   - "I need to concentrate on important tasks"
+
+${focusModePrompts.systemPrompt}
 
 I understand context and can handle complex requests. Feel free to ask me anything about your tasks or request any changes to your task list.`;
 

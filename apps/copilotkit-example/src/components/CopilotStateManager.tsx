@@ -2,13 +2,18 @@
 
 import { useCopilotReadable, useCopilotAction } from "@copilotkit/react-core";
 import { useSelector, useDispatch } from "react-redux";
-import { selectAllTasks } from "@/lib/features/tasks/tasksSelectors";
+import {
+  selectAllTasks,
+  selectFocusMode,
+} from "@/lib/features/tasks/tasksSelectors";
 import { createTaskActions } from "@/lib/features/tasks/actions";
 import { AppDispatch, RootState } from "@/lib/store";
 import { useStore } from "react-redux";
+import { focusModePrompts } from "@/lib/copilot/focus-mode-prompts";
 
 export function CopilotStateManager() {
   const tasks = useSelector(selectAllTasks);
+  const focusMode = useSelector(selectFocusMode);
   const dispatch = useDispatch<AppDispatch>();
   const store = useStore<RootState>();
   const taskActions = createTaskActions(dispatch, store.getState.bind(store));
@@ -17,6 +22,12 @@ export function CopilotStateManager() {
   useCopilotReadable({
     description: "Current tasks in the todo list",
     value: tasks,
+  });
+
+  // Expose focus mode state to Copilot
+  useCopilotReadable({
+    description: "Current focus mode state",
+    value: focusMode,
   });
 
   // Add task action
@@ -77,6 +88,22 @@ export function CopilotStateManager() {
     ],
     handler: async ({ taskId }) => {
       return await taskActions.deleteTask(taskId as string);
+    },
+  });
+
+  // Toggle focus mode action
+  useCopilotAction({
+    name: "toggleFocusMode",
+    description: "Toggle focus mode to prioritize high priority tasks",
+    parameters: [
+      {
+        name: "taskId",
+        type: "string",
+        description: "Optional task ID to focus on",
+      },
+    ],
+    handler: async ({ taskId }) => {
+      return await taskActions.toggleFocusMode(taskId as string | null);
     },
   });
 

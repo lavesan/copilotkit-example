@@ -1,5 +1,4 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { useSelector } from "react-redux";
 import { Task, TasksState } from "./types";
 
 const initialState: TasksState = {
