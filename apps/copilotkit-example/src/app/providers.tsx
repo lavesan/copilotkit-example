@@ -6,7 +6,7 @@ import { CopilotKit } from "@copilotkit/react-core";
 
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
-    <CopilotKit publicApiKey="ck_pub_8651e8f4d142158c8508c052d3578782">
+    <CopilotKit publicApiKey={process.env.NEXT_PUBLIC_COPILOT_API_KEY || ""}>
       <ThemeProvider
         attribute="class"
         defaultTheme="dark"

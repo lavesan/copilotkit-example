@@ -9,7 +9,7 @@ import {
 import { createTaskActions } from "@/lib/features/tasks/actions";
 import { AppDispatch, RootState } from "@/lib/store";
 import { useStore } from "react-redux";
-import { focusModePrompts } from "@/lib/copilot/focus-mode-prompts";
+import { useTheme } from "next-themes";
 
 export function CopilotStateManager() {
   const tasks = useSelector(selectAllTasks);
@@ -17,6 +17,7 @@ export function CopilotStateManager() {
   const dispatch = useDispatch<AppDispatch>();
   const store = useStore<RootState>();
   const taskActions = createTaskActions(dispatch, store.getState.bind(store));
+  const { theme, setTheme } = useTheme();
 
   // Expose tasks state to Copilot
   useCopilotReadable({
@@ -28,6 +29,12 @@ export function CopilotStateManager() {
   useCopilotReadable({
     description: "Current focus mode state",
     value: focusMode,
+  });
+
+  // Expose theme state to Copilot
+  useCopilotReadable({
+    description: "Current theme (dark or light)",
+    value: theme,
   });
 
   // Add task action
@@ -104,6 +111,24 @@ export function CopilotStateManager() {
     ],
     handler: async ({ taskId }) => {
       return await taskActions.toggleFocusMode(taskId as string | null);
+    },
+  });
+
+  // Toggle theme action
+  useCopilotAction({
+    name: "toggleTheme",
+    description: "Toggle between light and dark theme",
+    parameters: [
+      {
+        name: "theme",
+        type: "string",
+        description: "The theme to set (light or dark)",
+        enum: ["light", "dark"],
+      },
+    ],
+    handler: async ({ theme: newTheme }) => {
+      setTheme(newTheme as string);
+      return `Theme changed to ${newTheme}`;
     },
   });
 

@@ -11,13 +11,15 @@ import {
   Check,
   Eye,
   EyeOff,
-  Brain,
+  Sun,
+  Moon,
 } from "lucide-react";
 import { useState } from "react";
 import { TaskFormModal } from "@/components/TaskFormModal";
 import { useDispatch } from "react-redux";
 import { deleteTask, updateTask } from "@/lib/features/tasks/tasksSlice";
 import { format } from "date-fns";
+import { useTheme } from "next-themes";
 
 interface TaskDetailsModalProps {
   task: Task | null;
@@ -152,6 +154,7 @@ const TaskCard = ({
   onCardClick: (task: Task) => void;
 }) => {
   const dispatch = useDispatch();
+  const { theme } = useTheme();
 
   const priorityColors = {
     high: "from-[#FF5F6D] to-[#FFC371]",
@@ -225,7 +228,11 @@ const TaskCard = ({
                   </button>
                   <h3
                     className={`text-xl font-semibold tracking-tight ${
-                      isCompleted ? "text-gray-400 line-through" : "text-white"
+                      isCompleted
+                        ? "text-gray-400 line-through"
+                        : theme === "dark"
+                          ? "text-white"
+                          : "text-gray-900"
                     }`}
                   >
                     {task.label}
@@ -286,6 +293,7 @@ export function TaskList() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   const [focusMode, setFocusMode] = useState(false);
+  const { theme, setTheme } = useTheme();
 
   const filteredTasks = tasks.filter((task) => {
     if (filter === "all") return true;
@@ -302,10 +310,29 @@ export function TaskList() {
     <div className="space-y-8">
       <div className="flex flex-col gap-6">
         <div className="flex justify-between items-center">
-          <h1 className="text-4xl font-bold text-white tracking-tight">
+          <h1
+            className={`text-4xl font-bold tracking-tight ${theme === "dark" ? "text-white" : "text-gray-900"}`}
+          >
             AI Task Planner
           </h1>
           <div className="flex items-center gap-4">
+            {/* Theme Toggle Button */}
+            <button
+              onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+              className="group flex items-center gap-3 px-4 py-2 rounded-full transition-all duration-300 cursor-pointer bg-[#1A1D24]/80 text-gray-400 hover:text-white"
+            >
+              <span className="text-sm font-medium">
+                {theme === "dark" ? "Light Mode" : "Dark Mode"}
+              </span>
+              <div className="w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 bg-[#1A1D24] group-hover:bg-white/5">
+                {theme === "dark" ? (
+                  <Sun className="w-5 h-5" />
+                ) : (
+                  <Moon className="w-5 h-5" />
+                )}
+              </div>
+            </button>
+
             {/* Focus Mode Button */}
             <button
               onClick={() => setFocusMode(!focusMode)}
