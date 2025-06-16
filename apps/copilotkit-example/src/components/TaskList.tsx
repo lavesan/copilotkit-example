@@ -9,6 +9,7 @@ import { toggleFocusMode, deleteTask } from "@/lib/features/tasks/tasksSlice";
 import { Task } from "@/lib/features/tasks/types";
 import { Plus, Trash2 } from "lucide-react";
 import { useState } from "react";
+import { TaskFormModal } from "@/components/TaskFormModal";
 
 const TaskCard = ({ task }: { task: Task }) => {
   const dispatch = useDispatch();
@@ -82,6 +83,7 @@ export const TaskList = () => {
   const dispatch = useDispatch();
   const tasks = useSelector(selectFilteredTasks);
   const [filter, setFilter] = useState<"all" | "pending" | "completed">("all");
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const filteredTasks = tasks.filter((task) => {
     if (filter === "all") return true;
@@ -98,10 +100,8 @@ export const TaskList = () => {
           <h1 className="text-3xl font-bold">AI Task Planner</h1>
           <button
             className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-full flex items-center gap-2 cursor-pointer transition-colors"
-            onClick={() => {
-              // Add your task creation logic here
-              console.log("Add task clicked");
-            }}
+            onClick={() => setIsModalOpen(true)}
+            aria-label="Add new task"
           >
             <Plus className="w-5 h-5" />
           </button>
@@ -148,6 +148,12 @@ export const TaskList = () => {
           <TaskCard key={task.id} task={task} />
         ))}
       </div>
+
+      {/* Task Form Modal */}
+      <TaskFormModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+      />
     </div>
   );
 };

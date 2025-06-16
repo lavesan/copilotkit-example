@@ -55,7 +55,7 @@ export const selectTasksByStatus = createSelector(
     return {
       todo: tasks.filter((task: Task) => task.status === "todo"),
       inProgress: tasks.filter((task: Task) => task.status === "in-progress"),
-      done: tasks.filter((task: Task) => task.status === "done"),
+      completed: tasks.filter((task: Task) => task.status === "completed"),
     };
   }
 );

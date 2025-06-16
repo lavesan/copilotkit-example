@@ -65,9 +65,9 @@ export const Sidebar = () => {
           </button>
           <button
             className="w-full text-left px-3 py-2 rounded-lg hover:bg-gray-800"
-            onClick={() => dispatch(setStatusFilter(["done"]))}
+            onClick={() => dispatch(setStatusFilter(["completed"]))}
           >
-            Done ({tasksByStatus.done.length})
+            Done ({tasksByStatus.completed.length})
           </button>
         </div>
       </div>
