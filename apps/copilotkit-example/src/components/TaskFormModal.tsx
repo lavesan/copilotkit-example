@@ -16,30 +16,28 @@ interface TaskFormModalProps {
 
 interface TaskFormData {
   label: string;
-  description: string;
+  description?: string;
   priority: "low" | "medium" | "high";
   tags: string[];
-  dueDate: string;
+  dueDate?: string;
 }
 
-const schema = yup
-  .object({
-    label: yup.string().required("Task label is required"),
-    description: yup.string().default(""),
-    priority: yup
-      .string()
-      .oneOf(["low", "medium", "high"] as const)
-      .required("Priority is required"),
-    tags: yup.array(yup.string().required()).default([]),
-    dueDate: yup.string().default(""),
-  })
-  .required();
+const schema = yup.object().shape({
+  label: yup.string().required("Task label is required"),
+  description: yup.string(),
+  priority: yup
+    .string()
+    .oneOf(["low", "medium", "high"])
+    .required("Priority is required"),
+  tags: yup.array().of(yup.string().required()).defined(),
+  dueDate: yup.string(),
+}) as yup.ObjectSchema<TaskFormData>;
 
 export function TaskFormModal({ isOpen, onClose }: TaskFormModalProps) {
-  const dispatch = useDispatch<AppDispatch>();
+  const dispatch = useDispatch();
   const store = useStore<RootState>();
   const taskActions = createTaskActions(dispatch, store.getState.bind(store));
-  const [newTag, setNewTag] = useState("");
+  const [tagInput, setTagInput] = useState("");
 
   const {
     control,
@@ -51,59 +49,49 @@ export function TaskFormModal({ isOpen, onClose }: TaskFormModalProps) {
   } = useForm<TaskFormData>({
     resolver: yupResolver<TaskFormData, any, any>(schema),
     defaultValues: {
-      label: "",
-      description: "",
       priority: "medium",
       tags: [],
-      dueDate: "",
     },
   });
 
   const currentLabel = watch("label");
-  const currentTags = watch("tags");
-
-  const onSubmit: SubmitHandler<TaskFormData> = async (data) => {
-    await taskActions.addTask({
-      label: data.label,
-      description: data.description,
-      priority: data.priority,
-      tags: data.tags,
-      dueDate: data.dueDate || undefined,
-    });
-    onClose();
-  };
-
-  const addTag = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter" && newTag.trim()) {
-      e.preventDefault();
-      setValue("tags", [...(currentTags || []), newTag.trim()]);
-      setNewTag("");
-    }
-  };
-
-  const removeTag = (tagToRemove: string) => {
-    setValue(
-      "tags",
-      (currentTags || []).filter((tag) => tag !== tagToRemove)
-    );
-  };
+  const tags = watch("tags");
 
   useEffect(() => {
     reset();
   }, [isOpen]);
 
+  const handleAddTag = () => {
+    if (tagInput.trim() && !tags.includes(tagInput.trim())) {
+      setValue("tags", [...tags, tagInput.trim()]);
+      setTagInput("");
+    }
+  };
+
+  const handleRemoveTag = (tagToRemove: string) => {
+    setValue(
+      "tags",
+      tags.filter((tag) => tag !== tagToRemove)
+    );
+  };
+
+  const onSubmit: SubmitHandler<TaskFormData> = async (data) => {
+    await taskActions.addTask(data);
+    onClose();
+  };
+
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-6">
-      <div className="bg-[#1A1D24] rounded-xl w-full max-w-2xl max-h-[85vh] flex flex-col">
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+      <div className="bg-card rounded-3xl w-full max-w-2xl max-h-[85vh] flex flex-col border border-card-border">
         {/* Header */}
-        <div className="p-6 border-b border-gray-700">
+        <div className="p-6 border-b border-border">
           <div className="flex justify-between items-center">
             <h2 className="text-2xl font-bold">Add New Task</h2>
             <button
               onClick={onClose}
-              className="p-2 hover:bg-[#2A2D34] rounded-full transition-colors"
+              className="p-2 hover:bg-secondary rounded-full transition-colors"
             >
               <X className="w-5 h-5" />
             </button>
@@ -112,7 +100,7 @@ export function TaskFormModal({ isOpen, onClose }: TaskFormModalProps) {
 
         {/* Form Content - Scrollable */}
         <div className="p-6 overflow-y-auto flex-1">
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
             {/* Task Label */}
             <div>
               <label className="block text-sm font-medium mb-2">
@@ -125,12 +113,13 @@ export function TaskFormModal({ isOpen, onClose }: TaskFormModalProps) {
                   <input
                     {...field}
                     type="text"
-                    className="w-full p-2 bg-[#2A2D34] rounded-lg border border-gray-600 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+                    className="w-full px-4 py-2 bg-secondary rounded-xl border border-border focus:border-primary focus:ring-1 focus:ring-primary transition-colors"
+                    placeholder="Enter task label..."
                   />
                 )}
               />
               {errors.label && (
-                <span className="text-red-500 text-sm mt-1">
+                <span className="text-destructive text-sm mt-1">
                   {errors.label.message}
                 </span>
               )}
@@ -147,7 +136,7 @@ export function TaskFormModal({ isOpen, onClose }: TaskFormModalProps) {
                 render={({ field }) => (
                   <CopilotTextarea
                     {...field}
-                    className="w-full p-2 bg-[#2A2D34] rounded-lg border border-gray-600 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+                    className="w-full px-4 py-2 bg-secondary rounded-xl border border-border focus:border-primary focus:ring-1 focus:ring-primary transition-colors"
                     placeholder="Describe your task..."
                     autosuggestionsConfig={{
                       textareaPurpose: `This is a description for a task of a todo list titled: ${currentLabel}`,
@@ -168,18 +157,26 @@ export function TaskFormModal({ isOpen, onClose }: TaskFormModalProps) {
                 name="priority"
                 control={control}
                 render={({ field }) => (
-                  <select
-                    {...field}
-                    className="w-full p-2 bg-[#2A2D34] rounded-lg border border-gray-600 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
-                  >
-                    <option value="low">Low</option>
-                    <option value="medium">Medium</option>
-                    <option value="high">High</option>
-                  </select>
+                  <div className="flex gap-2">
+                    {["low", "medium", "high"].map((priority) => (
+                      <button
+                        key={priority}
+                        type="button"
+                        onClick={() => field.onChange(priority)}
+                        className={`flex-1 px-4 py-2 rounded-xl border transition-colors capitalize ${
+                          field.value === priority
+                            ? "bg-primary text-primary-foreground border-primary"
+                            : "bg-secondary border-border hover:border-primary"
+                        }`}
+                      >
+                        {priority}
+                      </button>
+                    ))}
+                  </div>
                 )}
               />
               {errors.priority && (
-                <span className="text-red-500 text-sm mt-1">
+                <span className="text-destructive text-sm mt-1">
                   {errors.priority.message}
                 </span>
               )}
@@ -188,31 +185,47 @@ export function TaskFormModal({ isOpen, onClose }: TaskFormModalProps) {
             {/* Tags */}
             <div>
               <label className="block text-sm font-medium mb-2">Tags</label>
-              <div className="flex flex-wrap gap-2 mb-2">
-                {(currentTags || []).map((tag) => (
-                  <span
-                    key={tag}
-                    className="px-3 py-1 text-sm rounded-full bg-[#2A2D34] text-white flex items-center gap-2"
+              <div className="space-y-3">
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={tagInput}
+                    onChange={(e) => setTagInput(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        e.preventDefault();
+                        handleAddTag();
+                      }
+                    }}
+                    className="flex-1 px-4 py-2 bg-secondary rounded-xl border border-border focus:border-primary focus:ring-1 focus:ring-primary transition-colors"
+                    placeholder="Add a tag..."
+                  />
+                  <button
+                    type="button"
+                    onClick={handleAddTag}
+                    className="px-4 py-2 bg-primary text-primary-foreground rounded-xl hover:bg-primary/90 transition-colors"
                   >
-                    {tag}
-                    <button
-                      type="button"
-                      onClick={() => removeTag(tag)}
-                      className="hover:text-red-400"
+                    Add
+                  </button>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {tags.map((tag) => (
+                    <span
+                      key={tag}
+                      className="px-3 py-1 bg-secondary rounded-full flex items-center gap-2 group"
                     >
-                      <X className="w-3 h-3" />
-                    </button>
-                  </span>
-                ))}
+                      {tag}
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveTag(tag)}
+                        className="w-4 h-4 rounded-full bg-destructive/10 text-destructive hover:bg-destructive/20 transition-colors flex items-center justify-center"
+                      >
+                        ×
+                      </button>
+                    </span>
+                  ))}
+                </div>
               </div>
-              <input
-                type="text"
-                value={newTag}
-                onChange={(e) => setNewTag(e.target.value)}
-                onKeyDown={addTag}
-                placeholder="Type and press Enter to add tags"
-                className="w-full p-2 bg-[#2A2D34] rounded-lg border border-gray-600 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
-              />
             </div>
 
             {/* Due Date */}
@@ -225,7 +238,7 @@ export function TaskFormModal({ isOpen, onClose }: TaskFormModalProps) {
                   <input
                     {...field}
                     type="datetime-local"
-                    className="w-full p-2 bg-[#2A2D34] rounded-lg border border-gray-600 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+                    className="w-full px-4 py-2 bg-secondary rounded-xl border border-border focus:border-primary focus:ring-1 focus:ring-primary transition-colors"
                   />
                 )}
               />
@@ -233,19 +246,18 @@ export function TaskFormModal({ isOpen, onClose }: TaskFormModalProps) {
           </form>
         </div>
 
-        {/* Footer - Fixed */}
-        <div className="p-6 border-t border-gray-700">
+        {/* Footer */}
+        <div className="p-6 border-t border-border">
           <div className="flex justify-end gap-3">
             <button
-              type="button"
               onClick={onClose}
-              className="px-4 py-2 rounded-lg border border-gray-600 hover:bg-[#2A2D34] transition-colors cursor-pointer"
+              className="px-4 py-2 bg-secondary hover:bg-secondary/80 rounded-xl transition-colors"
             >
               Cancel
             </button>
             <button
               onClick={handleSubmit(onSubmit)}
-              className="px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 transition-colors cursor-pointer"
+              className="px-4 py-2 bg-primary text-primary-foreground hover:bg-primary/90 rounded-xl transition-colors"
             >
               Add Task
             </button>

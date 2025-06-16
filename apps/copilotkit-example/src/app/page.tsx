@@ -1,5 +1,4 @@
 import { TaskList } from "@/components/TaskList";
-import { Header } from "@/components/Header";
 import { CopilotPopup } from "@copilotkit/react-ui";
 import {
   COPILOT_INSTRUCTIONS,
@@ -9,11 +8,7 @@ import {
 export default function Home() {
   return (
     <div className="min-h-screen bg-background text-foreground">
-      {/* Header */}
-      <Header />
-
-      {/* Main Content */}
-      <main className="container max-w-screen-2xl mx-auto p-6">
+      <main className="container mx-auto px-4 py-8">
         <TaskList />
         <CopilotPopup
           instructions={COPILOT_INSTRUCTIONS}
