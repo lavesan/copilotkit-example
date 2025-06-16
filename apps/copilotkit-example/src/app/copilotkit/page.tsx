@@ -1,120 +1,119 @@
 "use client";
 
-import { useCopilotAction, useCopilotReadable } from "@copilotkit/react-core";
-import { CopilotKitCSSProperties, CopilotSidebar, useCopilotChatSuggestions } from "@copilotkit/react-ui";
 import { useState } from "react";
+import { CopilotKit } from "@copilotkit/react-core";
+import { CopilotTextarea } from "@copilotkit/react-textarea";
+import { taskActions } from "../../lib/features/tasks/actions";
 
-export default function CopilotKitPage() {
-  const [themeColor, setThemeColor] = useState("#6366f1");
+import "@copilotkit/react-ui/styles.css";
 
-  // 🪁 Frontend Actions: https://docs.copilotkit.ai/guides/frontend-actions
-  useCopilotAction({
-    name: "setThemeColor",
-    parameters: [{
-      name: "themeColor",
-      description: "The theme color to set. Make sure to pick nice colors.",
-      required: true, 
-    }],
-    handler({ themeColor }) {
-      setThemeColor(themeColor);
-    },
-  });
+export default function CopilotChat() {
+  const [messages, setMessages] = useState<string[]>([]);
 
   return (
-    <main style={{ "--copilot-kit-primary-color": themeColor } as CopilotKitCSSProperties}>
-      <YourMainContent themeColor={themeColor} />
-      <CopilotSidebar
-        clickOutsideToClose={false}
-        defaultOpen={true}
-        labels={{
-          title: "Popup Assistant",
-          initial: "👋 Hi, there! You're chatting with an LLM.\n\n Since you scaffolded me with **CopilotKit**, you can ask me to do some cool stuff. \n\nFor example, you can ask me to:\n- Set the theme to orange\n- Write a proverb about AI\n- Generate a cool gradient card\n\nThen just watch as I perform tasks around the entire application!"
-        }}
-      />
-    </main>
-  );
-}
-
-function YourMainContent({ themeColor }: { themeColor: string }) {
-  const [proverbs, setProverbs] = useState<string[]>(['Success is the sum of small efforts, repeated day in and day out.']);
-
-  // 🪁 Copilot Suggestions: https://docs.copilotkit.ai/guides/copilot-suggestions
-  useCopilotChatSuggestions({
-    maxSuggestions: 3,
-    minSuggestions: 3,
-    instructions: "Give the user 3 options: 'Change theme color' (choose a random hexadecimal color), 'Write a proverb about {topic}' (choose a random topic) or 'Generate a gradient card between {color1} and {color2}' (choose random hexadecimal colors)",
-  })
-
-  // 🪁 Frontend Readables: https://docs.copilotkit.ai/guides/connect-your-data/frontend
-  useCopilotReadable({
-    description: "The current list of proverbs",
-    value: proverbs,
-  })
-
-  // 🪁 Frontend Tools: https://docs.copilotkit.ai/guides/frontend-actions
-  useCopilotAction({
-    name: "addProverb",
-    parameters: [{
-      name: "proverb",
-      description: "The proverb to add. Make it witty, short and concise.",
-      required: true,
-    }],
-    handler: ({ proverb }) => {
-      setProverbs([...proverbs, proverb]);
-    },
-  });
-
-  //🪁 Generative UI: https://docs.copilotkit.ai/guides/generative-ui
-  useCopilotAction({
-    name: "generateGradientCard",
-    description: "Generate a card with a card with a background gradient between two colors.",
-    parameters: [
-      { name: "color1", type: "string", required: true },
-      { name: "color2", type: "string", required: true },
-    ],
-    render: ({ args }) => {
-      return (
-        <div 
-          style={{ background: `linear-gradient(to right, ${args.color1}, ${args.color2})`}} 
-          className="p-10 my-4 rounded-xl flex flex-col justify-between flex-row"
-        >
-          <p className="text-white/50">{args.color1}</p>
-          <p className="text-white/60">{args.color2}</p>
-        </div>
-      );
-    },
-  });
-
-  return (
-    <div
-      style={{ backgroundColor: themeColor }}
-      className="h-screen w-screen flex justify-center items-center flex-col transition-colors duration-300"
-    >
-      <div className="bg-white/20 backdrop-blur-md p-8 rounded-2xl shadow-xl max-w-2xl w-full">
-        <h1 className="text-4xl font-bold text-white mb-2 text-center">Proverbs</h1>
-        <p className="text-gray-200 text-center italic mb-6">This is a demonstrative page, but it could be anything you want! 🪁</p>
-        <hr className="border-white/20 my-6" />
-        <div className="flex flex-col gap-3">
-          {proverbs.map((proverb, index) => (
-            <div 
-              key={index} 
-              className="bg-white/15 p-4 rounded-xl text-white relative group hover:bg-white/20 transition-all"
-            >
-              <p className="pr-8">{proverb}</p>
-              <button 
-                onClick={() => setProverbs(proverbs.filter((_, i) => i !== index))}
-                className="absolute right-3 top-3 opacity-0 group-hover:opacity-100 transition-opacity 
-                  bg-red-500 hover:bg-red-600 text-white rounded-full h-6 w-6 flex items-center justify-center"
-              >
-                ✕
-              </button>
-            </div>
-          ))}
-        </div>
-        {proverbs.length === 0 && <p className="text-center text-white/80 italic my-8">
-          No proverbs yet. Ask the assistant to add some!
-        </p>}
-      </div>
-    </div>
+    // <CopilotKit
+    //   publicApiKey="ck_pub_8651e8f4d142158c8508c052d3578782"
+    //   actions={[
+    //     {
+    //       name: "addTask",
+    //       description: "Add a new task to the task list",
+    //       parameters: {
+    //         type: "object",
+    //         properties: {
+    //           label: {
+    //             type: "string",
+    //             description: "The title of the task",
+    //           },
+    //           description: {
+    //             type: "string",
+    //             description: "Optional description of the task",
+    //           },
+    //           priority: {
+    //             type: "string",
+    //             enum: ["low", "medium", "high"],
+    //             description: "Priority level of the task",
+    //           },
+    //           tags: {
+    //             type: "array",
+    //             items: {
+    //               type: "string",
+    //             },
+    //             description: "Optional tags for the task",
+    //           },
+    //           dueDate: {
+    //             type: "string",
+    //             description: "Optional due date for the task (ISO string)",
+    //           },
+    //         },
+    //         required: ["label"],
+    //       },
+    //       handler: taskActions.addTask,
+    //     },
+    //     {
+    //       name: "deleteTask",
+    //       description: "Delete a task from the task list",
+    //       parameters: {
+    //         type: "object",
+    //         properties: {
+    //           taskId: {
+    //             type: "string",
+    //             description: "The ID of the task to delete",
+    //           },
+    //         },
+    //         required: ["taskId"],
+    //       },
+    //       handler: taskActions.deleteTask,
+    //     },
+    //     {
+    //       name: "reorderTasks",
+    //       description: "Reorder tasks in the task list",
+    //       parameters: {
+    //         type: "object",
+    //         properties: {
+    //           sourceIndex: {
+    //             type: "number",
+    //             description: "The current index of the task",
+    //           },
+    //           destinationIndex: {
+    //             type: "number",
+    //             description: "The new index for the task",
+    //           },
+    //         },
+    //         required: ["sourceIndex", "destinationIndex"],
+    //       },
+    //       handler: taskActions.reorderTasks,
+    //     },
+    //     {
+    //       name: "listTasks",
+    //       description: "List all tasks",
+    //       parameters: {
+    //         type: "object",
+    //         properties: {},
+    //       },
+    //       handler: taskActions.listTasks,
+    //     },
+    //   ]}
+    // >
+    //   <div className="flex flex-col h-screen bg-background">
+    //     <div className="flex-1 overflow-y-auto p-4">
+    //       {messages.map((message, index) => (
+    //         <div
+    //           key={index}
+    //           className="mb-4 p-3 rounded-lg bg-card text-card-foreground"
+    //         >
+    //           {message}
+    //         </div>
+    //       ))}
+    //     </div>
+    //     <div className="p-4 border-t border-border">
+    //       {/* <CopilotTextarea
+    //         className="w-full p-2 rounded-lg bg-input text-foreground resize-none"
+    //         placeholder="Ask me to manage your tasks..."
+    //         onSend={(message) => setMessages((prev) => [...prev, message])}
+    //       /> */}
+    //     </div>
+    //   </div>
+    // </CopilotKit>
+    <></>
   );
 }

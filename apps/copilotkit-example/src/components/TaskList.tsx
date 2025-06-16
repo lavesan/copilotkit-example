@@ -5,94 +5,74 @@ import {
   selectFilteredTasks,
   selectFocusMode,
 } from "@/lib/features/tasks/tasksSelectors";
-import { toggleFocusMode } from "@/lib/features/tasks/tasksSlice";
+import { toggleFocusMode, deleteTask } from "@/lib/features/tasks/tasksSlice";
 import { Task } from "@/lib/features/tasks/types";
-import { Plus } from "lucide-react";
+import { Plus, Trash2 } from "lucide-react";
+import { useState } from "react";
 
 const TaskCard = ({ task }: { task: Task }) => {
   const dispatch = useDispatch();
-  const focusMode = useSelector(selectFocusMode);
 
   return (
-    <div
-      className={`
-        bg-gray-900 rounded-lg p-4 space-y-3 transition-all
-        ${focusMode.active && focusMode.taskId !== task.id ? "opacity-50" : ""}
-      `}
-    >
-      {/* Priority Badge */}
-      <div className="flex justify-between items-start">
-        <span
-          className={`
-          px-2 py-1 text-xs rounded-full font-medium
-          ${task.priority === "high" ? "bg-red-900 text-red-200" : ""}
-          ${task.priority === "medium" ? "bg-yellow-900 text-yellow-200" : ""}
-          ${task.priority === "low" ? "bg-green-900 text-green-200" : ""}
-        `}
-        >
-          {task.priority}
-        </span>
-        <button
-          onClick={() => dispatch(toggleFocusMode(task.id))}
-          className="p-1 hover:bg-gray-800 rounded"
-        >
-          <span className="sr-only">Focus Mode</span>
-          <svg
-            className="w-4 h-4"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-            />
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-            />
-          </svg>
-        </button>
-      </div>
+    <div className="bg-[#1A1D24] rounded-xl p-4 space-y-3 transition-all">
+      {/* Colored bar and title */}
+      <div className="flex items-start gap-3">
+        <div
+          className={`w-1 h-full rounded-full ${
+            task.priority === "high"
+              ? "bg-red-500"
+              : task.priority === "medium"
+                ? "bg-orange-500"
+                : "bg-green-500"
+          }`}
+        />
+        <div className="flex-1">
+          <h3 className="text-xl font-semibold mb-2">{task.label}</h3>
 
-      {/* Task Title */}
-      <h3 className="text-lg font-semibold">{task.label}</h3>
+          {/* Tags */}
+          <div className="flex flex-wrap gap-2 mb-3">
+            {task.tags.map((tag) => (
+              <span
+                key={tag}
+                className="px-3 py-1 text-sm rounded-full bg-[#2A2D34] text-white"
+              >
+                {tag}
+              </span>
+            ))}
+          </div>
 
-      {/* Tags */}
-      <div className="flex flex-wrap gap-2">
-        {task.tags.map((tag) => (
-          <span
-            key={tag}
-            className="px-2 py-1 text-xs rounded-full bg-gray-800 text-gray-300"
-          >
-            {tag}
-          </span>
-        ))}
-      </div>
-
-      {/* Due Date */}
-      {task.dueDate && (
-        <div className="text-sm text-gray-400">
-          Due: {new Date(task.dueDate).toLocaleDateString()}
+          {/* Date and Status */}
+          <div className="flex items-center justify-between text-sm text-gray-400">
+            <span>
+              {task.dueDate
+                ? new Date(task.dueDate).toLocaleDateString("en-US", {
+                    day: "numeric",
+                    month: "short",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })
+                : "No due date"}
+            </span>
+            <div className="flex items-center gap-3">
+              <span
+                className={`px-3 py-1 rounded-full ${
+                  task.status === "completed"
+                    ? "bg-green-900/50 text-green-200"
+                    : "bg-[#2A2D34] text-white"
+                }`}
+              >
+                {task.status === "todo" ? "Pending" : task.status}
+              </span>
+              <button
+                onClick={() => dispatch(deleteTask(task.id))}
+                className="p-1 hover:bg-red-900/50 rounded-full cursor-pointer transition-colors"
+                title="Delete task"
+              >
+                <Trash2 className="w-4 h-4 text-red-400" />
+              </button>
+            </div>
+          </div>
         </div>
-      )}
-
-      {/* Status */}
-      <div className="flex justify-between items-center pt-2">
-        <span
-          className={`
-          px-2 py-1 text-xs rounded-full
-          ${task.status === "todo" ? "bg-gray-800 text-gray-300" : ""}
-          ${task.status === "in-progress" ? "bg-blue-900 text-blue-200" : ""}
-          ${task.status === "done" ? "bg-green-900 text-green-200" : ""}
-        `}
-        >
-          {task.status}
-        </span>
       </div>
     </div>
   );
@@ -101,43 +81,73 @@ const TaskCard = ({ task }: { task: Task }) => {
 export const TaskList = () => {
   const dispatch = useDispatch();
   const tasks = useSelector(selectFilteredTasks);
-  const focusMode = useSelector(selectFocusMode);
+  const [filter, setFilter] = useState<"all" | "pending" | "completed">("all");
+
+  const filteredTasks = tasks.filter((task) => {
+    if (filter === "all") return true;
+    if (filter === "pending") return task.status === "todo";
+    if (filter === "completed") return task.status === "completed";
+    return true;
+  });
 
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold">Tasks</h2>
-        <button className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg flex items-center gap-2">
-          <Plus className="w-5 h-5" />
-          Add Task
-        </button>
+      <div className="flex flex-col gap-4">
+        <div className="flex justify-between items-center">
+          <h1 className="text-3xl font-bold">AI Task Planner</h1>
+          <button
+            className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-full flex items-center gap-2 cursor-pointer transition-colors"
+            onClick={() => {
+              // Add your task creation logic here
+              console.log("Add task clicked");
+            }}
+          >
+            <Plus className="w-5 h-5" />
+          </button>
+        </div>
+
+        {/* Filter Tabs */}
+        <div className="flex gap-2 bg-[#1A1D24] p-1 rounded-lg w-fit">
+          <button
+            className={`px-4 py-2 rounded-lg cursor-pointer transition-colors ${
+              filter === "all"
+                ? "bg-indigo-600 text-white"
+                : "hover:bg-[#2A2D34]"
+            }`}
+            onClick={() => setFilter("all")}
+          >
+            All
+          </button>
+          <button
+            className={`px-4 py-2 rounded-lg cursor-pointer transition-colors ${
+              filter === "pending"
+                ? "bg-indigo-600 text-white"
+                : "hover:bg-[#2A2D34]"
+            }`}
+            onClick={() => setFilter("pending")}
+          >
+            Pending
+          </button>
+          <button
+            className={`px-4 py-2 rounded-lg cursor-pointer transition-colors ${
+              filter === "completed"
+                ? "bg-indigo-600 text-white"
+                : "hover:bg-[#2A2D34]"
+            }`}
+            onClick={() => setFilter("completed")}
+          >
+            Completed
+          </button>
+        </div>
       </div>
 
       {/* Task Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        {tasks.map((task) => (
+      <div className="space-y-4">
+        {filteredTasks.map((task) => (
           <TaskCard key={task.id} task={task} />
         ))}
       </div>
-
-      {/* Focus Mode Overlay */}
-      {focusMode.active && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center">
-          <div className="bg-gray-900 p-6 rounded-lg max-w-lg w-full">
-            <h3 className="text-xl font-bold mb-4">Focus Mode</h3>
-            <p className="text-gray-400">
-              Focus on your current task. Other tasks are dimmed.
-            </p>
-            <button
-              onClick={() => dispatch(toggleFocusMode(null))}
-              className="mt-4 w-full bg-gray-800 hover:bg-gray-700 text-white px-4 py-2 rounded-lg"
-            >
-              Exit Focus Mode
-            </button>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

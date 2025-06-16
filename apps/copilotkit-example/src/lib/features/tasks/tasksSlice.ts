@@ -38,6 +38,14 @@ export const tasksSlice = createSlice({
     deleteTask: (state, action: PayloadAction<string>) => {
       state.tasks = state.tasks.filter((task) => task.id !== action.payload);
     },
+    reorderTasks: (
+      state,
+      action: PayloadAction<{ sourceIndex: number; destinationIndex: number }>
+    ) => {
+      const { sourceIndex, destinationIndex } = action.payload;
+      const [removed] = state.tasks.splice(sourceIndex, 1);
+      state.tasks.splice(destinationIndex, 0, removed);
+    },
 
     // Filters
     setPriorityFilter: (
@@ -48,7 +56,7 @@ export const tasksSlice = createSlice({
     },
     setStatusFilter: (
       state,
-      action: PayloadAction<("todo" | "in-progress" | "done")[]>
+      action: PayloadAction<("todo" | "in-progress" | "completed")[]>
     ) => {
       state.filters.status = action.payload;
     },
@@ -64,8 +72,13 @@ export const tasksSlice = createSlice({
 
     // Focus Mode
     toggleFocusMode: (state, action: PayloadAction<string | null>) => {
-      state.focusMode.active = !state.focusMode.active;
-      state.focusMode.taskId = action.payload;
+      if (action.payload === null) {
+        state.focusMode.active = !state.focusMode.active;
+        state.focusMode.taskId = null;
+      } else {
+        state.focusMode.active = true;
+        state.focusMode.taskId = action.payload;
+      }
     },
     clearFocusMode: (state) => {
       state.focusMode = initialState.focusMode;
@@ -77,6 +90,7 @@ export const {
   addTask,
   updateTask,
   deleteTask,
+  reorderTasks,
   setPriorityFilter,
   setStatusFilter,
   setTagFilter,

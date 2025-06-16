@@ -3,7 +3,7 @@ export interface Task {
   label: string;
   description?: string;
   priority: "low" | "medium" | "high";
-  status: "todo" | "in-progress" | "done";
+  status: "todo" | "in-progress" | "completed";
   tags: string[];
   dueDate?: string;
   createdAt: string;
@@ -16,7 +16,7 @@ export interface TasksState {
   error: string | null;
   filters: {
     priority: ("low" | "medium" | "high")[];
-    status: ("todo" | "in-progress" | "done")[];
+    status: ("todo" | "in-progress" | "completed")[];
     tags: string[];
     search: string;
   };

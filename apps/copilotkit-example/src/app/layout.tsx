@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { Providers } from "./providers";
+
 import "./globals.css";
-import StoreProvider from "./StoreProvider";
-import { ThemeProvider } from "@/providers/ThemeProvider";
+import "@copilotkit/react-ui/styles.css";
+import { CopilotStateManager } from "@/components/CopilotStateManager";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -29,14 +31,10 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="dark"
-          enableSystem={true}
-          disableTransitionOnChange
-        >
-          <StoreProvider>{children}</StoreProvider>
-        </ThemeProvider>
+        <Providers>
+          <CopilotStateManager />
+          {children}
+        </Providers>
       </body>
     </html>
   );
