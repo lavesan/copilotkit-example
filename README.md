@@ -1,84 +1,116 @@
-# Turborepo starter
+# AI Task Planner with CopilotKit
 
-This Turborepo starter is maintained by the Turborepo core team.
+A modern, AI-powered task management application built with Next.js and CopilotKit. This application combines the power of AI assistance with a beautiful, responsive user interface to help users manage their tasks efficiently.
 
-## Using this example
+![AI Task Planner](./screenshot.png)
 
-Run the following command:
+## Features
 
-```sh
-npx create-turbo@latest
+### Task Management
+
+- ✨ Create tasks with rich details:
+  - Title and description
+  - Priority levels (low, medium, high)
+  - Custom tags
+  - Due dates
+- ✅ Mark tasks as completed
+- 🗑️ Delete tasks
+- 🔍 Filter tasks by status (All, Pending, Completed)
+
+### AI Integration
+
+- 🤖 AI-powered task suggestions
+- 💡 Smart description auto-completion
+- 🎯 Intelligent task organization
+- 🗣️ Natural language task creation and management
+
+### Focus Mode
+
+- 👀 Toggle Focus Mode to prioritize important tasks
+- 🔝 Automatic task sorting by priority
+- 🎯 Concentrate on high-priority items
+
+### Theme Support
+
+- 🌓 Toggle between Light and Dark modes
+- 💫 Beautiful transitions and animations
+- 🎨 Modern glassmorphism design
+
+### User Interface
+
+- 📱 Fully responsive design
+- 🎭 Beautiful glassmorphism effects
+- ⚡ Real-time updates
+- 🏷️ Custom tag system with color coding
+
+## Tech Stack
+
+- **Frontend Framework**: Next.js
+- **State Management**: Redux
+- **AI Integration**: CopilotKit
+- **Styling**: Tailwind CSS
+- **Icons**: Lucide Icons
+- **Date Handling**: date-fns
+- **Form Management**: React Hook Form
+
+## Getting Started
+
+1. Clone the repository:
+
+```bash
+git clone <repository-url>
 ```
 
-## What's inside?
+2. Install dependencies:
 
-This Turborepo includes the following packages/apps:
-
-### Apps and Packages
-
-- `docs`: a [Next.js](https://nextjs.org/) app
-- `web`: another [Next.js](https://nextjs.org/) app
-- `@repo/ui`: a stub React component library shared by both `web` and `docs` applications
-- `@repo/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
-- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
-
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
-
-### Utilities
-
-This Turborepo has some additional tools already setup for you:
-
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
-
-### Build
-
-To build all apps and packages, run the following command:
-
-```
+```bash
 cd my-turborepo
-pnpm build
+yarn install
 ```
 
-### Develop
+3. Start the development server:
 
-To develop all apps and packages, run the following command:
-
-```
-cd my-turborepo
-pnpm dev
+```bash
+yarn dev
 ```
 
-### Remote Caching
+The application will be available at `http://localhost:3000`.
 
-> [!TIP]
-> Vercel Remote Cache is free for all plans. Get started today at [vercel.com](https://vercel.com/signup?/signup?utm_source=remote-cache-sdk&utm_campaign=free_remote_cache).
-
-Turborepo can use a technique known as [Remote Caching](https://turborepo.com/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
-
-By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup?utm_source=turborepo-examples), then enter the following commands:
+## Project Structure
 
 ```
-cd my-turborepo
-npx turbo login
+apps/copilotkit-example/
+├── src/
+│   ├── app/              # Next.js app directory
+│   ├── components/       # React components
+│   ├── lib/
+│   │   ├── copilot/     # AI integration
+│   │   ├── features/    # Redux features
+│   │   └── store.ts     # Redux store
+│   └── providers/       # App providers
 ```
 
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
+## Key Components
 
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your Turborepo:
+- **TaskList**: Main component displaying all tasks
+- **TaskFormModal**: Modal for creating new tasks
+- **TaskDetailsModal**: Displays detailed task information
+- **CopilotStateManager**: Manages AI integration state
+- **FocusModeButton**: Controls focus mode functionality
 
-```
-npx turbo link
-```
+## AI Features
 
-## Useful Links
+The application uses CopilotKit to provide:
 
-Learn more about the power of Turborepo:
+- Task suggestions based on context
+- Intelligent description completion
+- Natural language processing for task management
+- Smart task organization and prioritization
 
-- [Tasks](https://turborepo.com/docs/crafting-your-repository/running-tasks)
-- [Caching](https://turborepo.com/docs/crafting-your-repository/caching)
-- [Remote Caching](https://turborepo.com/docs/core-concepts/remote-caching)
-- [Filtering](https://turborepo.com/docs/crafting-your-repository/running-tasks#using-filters)
-- [Configuration Options](https://turborepo.com/docs/reference/configuration)
-- [CLI Usage](https://turborepo.com/docs/reference/command-line-reference)
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
