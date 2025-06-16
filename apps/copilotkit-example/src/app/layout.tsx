@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { Providers } from "./providers";
 import { CopilotStateManager } from "@/components/CopilotStateManager";
+import { Toaster } from "sonner";
 
 import "./globals.css";
 import "@copilotkit/react-ui/styles.css";
@@ -24,9 +25,9 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
     <html lang="en" suppressHydrationWarning>
       <body
@@ -35,6 +36,7 @@ export default function RootLayout({
         <Providers>
           <CopilotStateManager />
           {children}
+          <Toaster richColors closeButton position="top-right" />
         </Providers>
       </body>
     </html>

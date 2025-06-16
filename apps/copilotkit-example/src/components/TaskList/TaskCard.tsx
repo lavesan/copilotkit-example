@@ -4,6 +4,7 @@ import { deleteTask, updateTask } from "@/lib/features/tasks/tasksSlice";
 import { useTheme } from "next-themes";
 import { format } from "date-fns";
 import { Check, Trash2 } from "lucide-react";
+import { formatDate } from "@/utils/date";
 
 export const TaskCard = ({
   task,
@@ -131,9 +132,11 @@ export const TaskCard = ({
 
             <div className="flex items-center justify-between mt-4 text-sm text-gray-400">
               <span>
-                {task.dueDate
-                  ? format(new Date(task.dueDate), "dd MMM HH:mm")
-                  : "No due date"}
+                {task.dueDate && (
+                  <span className="text-xs text-gray-500 dark:text-gray-400">
+                    {formatDate.compact(task.dueDate)}
+                  </span>
+                )}
               </span>
               {task.priority && (
                 <span className="capitalize">{task.priority}</span>

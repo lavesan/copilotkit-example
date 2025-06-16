@@ -1,6 +1,6 @@
 import { Task } from "@/lib/features/tasks/types";
-import { format } from "date-fns";
 import { Calendar, AlertCircle } from "lucide-react";
+import { formatDate } from "@/utils/date";
 
 interface TaskDetailsModalProps {
   task: Task | null;
@@ -97,10 +97,7 @@ export const TaskDetailsModal = ({
                   <div className="flex items-center gap-2">
                     <Calendar className="w-5 h-5" />
                     <span>
-                      Due:{" "}
-                      {task.dueDate
-                        ? format(new Date(task.dueDate), "PPP 'at' p")
-                        : "No due date"}
+                      Due: {task.dueDate && formatDate.full(task.dueDate)}
                     </span>
                   </div>
                   <div className="flex items-center gap-2">

@@ -11,7 +11,8 @@ import { AppDispatch, RootState } from "@/lib/store";
 import { useStore } from "react-redux";
 import { useTheme } from "next-themes";
 import { ShowTask, ShowTasks } from "./generative-ui/show-task";
-import { Task } from "@/lib/features/tasks/types";
+import { ShowSuggestions } from "./generative-ui/show-suggestions";
+import { AutomatedTasksService } from "@/lib/copilot/automated-tasks";
 
 export function CopilotStateManager() {
   const tasks = useSelector(selectAllTasks);
@@ -20,6 +21,8 @@ export function CopilotStateManager() {
   const store = useStore<RootState>();
   const taskActions = createTaskActions(dispatch, store.getState.bind(store));
   const { theme, setTheme } = useTheme();
+
+  // COPILOT READABLES
 
   // Expose tasks state to Copilot
   useCopilotReadable({
@@ -38,6 +41,8 @@ export function CopilotStateManager() {
     description: "Current theme (dark or light)",
     value: theme,
   });
+
+  // COPILOT ACTIONS
 
   // Add task action
   useCopilotAction({
@@ -69,16 +74,46 @@ export function CopilotStateManager() {
       {
         name: "dueDate",
         type: "string",
-        description: "Optional due date for the task (ISO string)",
+        description:
+          "Due date for the task. You can use: 'today', 'tomorrow', a date in YYYY-MM-DD format, or a full date-time in YYYY-MM-DDTHH:mm format. If no time is specified, it will default to end of day (23:59).",
       },
     ],
     handler: async ({ label, description, priority, tags, dueDate }) => {
+      let parsedDueDate: string | undefined = undefined;
+
+      if (dueDate) {
+        const now = new Date();
+        let targetDate: Date;
+
+        if (dueDate.toLowerCase() === "today") {
+          targetDate = now;
+          targetDate.setHours(23, 59, 0, 0);
+        } else if (dueDate.toLowerCase() === "tomorrow") {
+          targetDate = new Date(now.setDate(now.getDate() + 1));
+          targetDate.setHours(23, 59, 0, 0);
+        } else {
+          // Verifica se tem especificação de hora (formato: YYYY-MM-DDTHH:mm)
+          const hasTime = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/.test(dueDate);
+
+          if (hasTime) {
+            // Se tem hora especificada, usa exatamente como veio
+            targetDate = new Date(dueDate);
+          } else {
+            // Se é só data (YYYY-MM-DD), define para 23:59
+            targetDate = new Date(dueDate);
+            targetDate.setHours(23, 59, 0, 0);
+          }
+        }
+
+        parsedDueDate = targetDate.toISOString();
+      }
+
       return await taskActions.addTask({
         label: label as string,
         description: description as string | undefined,
         priority: priority as "low" | "medium" | "high" | undefined,
         tags: tags as string[] | undefined,
-        dueDate: dueDate as string | undefined,
+        dueDate: parsedDueDate,
       });
     },
   });
@@ -133,6 +168,8 @@ export function CopilotStateManager() {
       return `Theme changed to ${newTheme}`;
     },
   });
+
+  // COPILOT GENERATIVE UI
 
   // Show a single task in the chat
   useCopilotAction({
@@ -228,6 +265,131 @@ export function CopilotStateManager() {
         <ShowTasks
           tasks={filteredTasks}
           status={status as "error" | "running" | "complete"}
+        />
+      );
+    },
+  });
+
+  // COPILOT TASKS
+
+  // Verificar tarefas próximas do prazo
+  useCopilotAction({
+    name: "checkDeadlines",
+    description:
+      "Verificar tarefas que estão próximas do prazo de vencimento (próximos 3 dias)",
+    parameters: [],
+    renderAndWaitForResponse: ({ status, respond }) => {
+      const upcomingTasks = AutomatedTasksService.checkUpcomingDeadlines(tasks);
+      if (upcomingTasks.length === 0) {
+        respond?.("Não há tarefas próximas do prazo.");
+        return <></>;
+      }
+      respond?.(
+        `Encontrei ${upcomingTasks.length} ${upcomingTasks.length === 1 ? "tarefa próxima" : "tarefas próximas"} do prazo.`
+      );
+      return (
+        <ShowSuggestions
+          type="deadlines"
+          tasks={upcomingTasks}
+          status={status as "running" | "complete" | "error"}
+        />
+      );
+    },
+  });
+
+  // Verificar tarefas atrasadas
+  useCopilotAction({
+    name: "checkOverdueTasks",
+    description: "Verificar tarefas que já passaram do prazo",
+    parameters: [],
+    renderAndWaitForResponse: ({ status, respond }) => {
+      const overdueTasks = AutomatedTasksService.checkOverdueTasks(tasks);
+      if (overdueTasks.length === 0) {
+        respond?.("Não há tarefas atrasadas.");
+        return <></>;
+      }
+      respond?.(
+        `Encontrei ${overdueTasks.length} ${overdueTasks.length === 1 ? "tarefa atrasada" : "tarefas atrasadas"}.`
+      );
+      return (
+        <ShowSuggestions
+          type="overdue"
+          tasks={overdueTasks}
+          status={status as "running" | "complete" | "error"}
+        />
+      );
+    },
+  });
+
+  // Sugerir melhorias no workflow
+  useCopilotAction({
+    name: "suggestWorkflowImprovements",
+    description: "Analisar padrões e sugerir melhorias no fluxo de trabalho",
+    parameters: [],
+    renderAndWaitForResponse: ({ status, respond }) => {
+      const suggestions =
+        AutomatedTasksService.generateWorkflowSuggestions(tasks);
+      const reorganization =
+        AutomatedTasksService.suggestTaskReorganization(tasks);
+
+      if (reorganization) {
+        suggestions.unshift(reorganization);
+      }
+
+      if (suggestions.length === 0) {
+        respond?.("Não tenho sugestões de melhoria no momento.");
+        return <></>;
+      }
+
+      respond?.(
+        "Aqui estão algumas sugestões para melhorar seu fluxo de trabalho:"
+      );
+      return (
+        <ShowSuggestions
+          type="workflow"
+          suggestions={suggestions}
+          status={status as "running" | "complete" | "error"}
+        />
+      );
+    },
+  });
+
+  // Sugerir tarefas relacionadas
+  useCopilotAction({
+    name: "suggestRelatedTasks",
+    description: "Sugerir tarefas relacionadas a uma tarefa específica",
+    parameters: [
+      {
+        name: "taskId",
+        type: "string",
+        description: "ID da tarefa para encontrar relacionadas",
+        required: true,
+      },
+    ],
+    renderAndWaitForResponse: ({ args, status, respond }) => {
+      const task = tasks.find((t) => t.id === args.taskId);
+      if (!task) {
+        respond?.("Tarefa não encontrada.");
+        return <></>;
+      }
+
+      const relatedTasks = AutomatedTasksService.suggestRelatedTasks(
+        task,
+        tasks
+      );
+      if (relatedTasks.length === 0) {
+        respond?.("Não encontrei tarefas relacionadas.");
+        return <></>;
+      }
+
+      respond?.(
+        `Encontrei ${relatedTasks.length} ${relatedTasks.length === 1 ? "tarefa relacionada" : "tarefas relacionadas"} à "${task.label}"`
+      );
+      return (
+        <ShowSuggestions
+          type="related"
+          tasks={relatedTasks}
+          status={status as "running" | "complete" | "error"}
         />
       );
     },

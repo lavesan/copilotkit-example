@@ -1,5 +1,6 @@
 import { Task } from "@/lib/features/tasks/types";
 import { format } from "date-fns";
+import { formatDate } from "@/utils/date";
 
 interface ShowTaskProps {
   task: Task;
@@ -42,9 +43,7 @@ export function ShowTask({ task, status }: ShowTaskProps) {
       <div className="text-sm text-gray-400">
         <div>Priority: {task.priority}</div>
         <div>Status: {task.status}</div>
-        {task.dueDate && (
-          <div>Due: {format(new Date(task.dueDate), "PPP")}</div>
-        )}
+        {task.dueDate && <div>Due: {formatDate.deadline(task.dueDate)}</div>}
       </div>
     </div>
   );
