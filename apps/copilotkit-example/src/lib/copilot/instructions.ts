@@ -1,4 +1,14 @@
+const now = new Date();
+const currentDate = now.toLocaleDateString("pt-BR", {
+  weekday: "long",
+  year: "numeric",
+  month: "long",
+  day: "numeric",
+});
+
 export const COPILOT_INSTRUCTIONS = `I am your AI Task Management Assistant. I can help you manage your tasks efficiently through natural conversation. Here's what I can do:
+
+Today is ${currentDate}
 
 1. Task Management:
    - Add new tasks with titles, descriptions, priorities, tags, and due dates

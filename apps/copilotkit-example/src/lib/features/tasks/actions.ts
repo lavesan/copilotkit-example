@@ -5,6 +5,7 @@ import {
   deleteTask,
   reorderTasks,
   toggleFocusMode,
+  updateTask,
 } from "./tasksSlice";
 import { Task } from "./types";
 import { v4 as uuidv4 } from "uuid";
@@ -58,5 +59,19 @@ export const createTaskActions = (
   toggleFocusMode: async (taskId: string | null = null) => {
     dispatch(toggleFocusMode(taskId));
     return { success: true };
+  },
+
+  updateTask: async (
+    taskId: string,
+    updates: Partial<Omit<Task, "id" | "createdAt">>
+  ) => {
+    dispatch(
+      updateTask({
+        id: taskId,
+        ...updates,
+        updatedAt: new Date().toISOString(),
+      })
+    );
+    return "Task updated successfully";
   },
 });

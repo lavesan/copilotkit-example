@@ -1,4 +1,4 @@
-import { format, parseISO } from "date-fns";
+import { format, parseISO, endOfDay, startOfToday, addDays } from "date-fns";
 
 export const formatDate = {
   // For task cards - compact format
@@ -27,5 +27,24 @@ export const parseDate = (isoDate: string) => {
   } catch (error) {
     console.error("Error parsing date:", error);
     return new Date(); // Fallback to current date
+  }
+};
+
+// Process dates from Copilot inputs
+export const processCopilotDate = (dateInput: string): string => {
+  const today = startOfToday();
+
+  switch (dateInput.toLowerCase()) {
+    case "today":
+      return endOfDay(today).toISOString();
+    case "tomorrow":
+      return endOfDay(addDays(today, 1)).toISOString();
+    default:
+      // Check if it's a full date-time format (YYYY-MM-DDTHH:mm)
+      if (dateInput.includes("T")) {
+        return new Date(dateInput).toISOString();
+      }
+      // For date-only format (YYYY-MM-DD), set to end of day
+      return endOfDay(new Date(dateInput)).toISOString();
   }
 };

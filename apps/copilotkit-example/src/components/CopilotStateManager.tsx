@@ -13,6 +13,7 @@ import { useTheme } from "next-themes";
 import { ShowTask, ShowTasks } from "./generative-ui/show-task";
 import { ShowSuggestions } from "./generative-ui/show-suggestions";
 import { AutomatedTasksService } from "@/lib/copilot/automated-tasks";
+import { processCopilotDate } from "@/utils/date";
 
 export function CopilotStateManager() {
   const tasks = useSelector(selectAllTasks);
@@ -82,30 +83,7 @@ export function CopilotStateManager() {
       let parsedDueDate: string | undefined = undefined;
 
       if (dueDate) {
-        const now = new Date();
-        let targetDate: Date;
-
-        if (dueDate.toLowerCase() === "today") {
-          targetDate = now;
-          targetDate.setHours(23, 59, 0, 0);
-        } else if (dueDate.toLowerCase() === "tomorrow") {
-          targetDate = new Date(now.setDate(now.getDate() + 1));
-          targetDate.setHours(23, 59, 0, 0);
-        } else {
-          // Verifica se tem especificação de hora (formato: YYYY-MM-DDTHH:mm)
-          const hasTime = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/.test(dueDate);
-
-          if (hasTime) {
-            // Se tem hora especificada, usa exatamente como veio
-            targetDate = new Date(dueDate);
-          } else {
-            // Se é só data (YYYY-MM-DD), define para 23:59
-            targetDate = new Date(dueDate);
-            targetDate.setHours(23, 59, 0, 0);
-          }
-        }
-
-        parsedDueDate = targetDate.toISOString();
+        parsedDueDate = processCopilotDate(dueDate);
       }
 
       return await taskActions.addTask({
@@ -166,6 +144,76 @@ export function CopilotStateManager() {
     handler: async ({ theme: newTheme }) => {
       setTheme(newTheme as string);
       return `Theme changed to ${newTheme}`;
+    },
+  });
+
+  // Update task action
+  useCopilotAction({
+    name: "updateTask",
+    description:
+      "Update an existing task. Can update status, label, description, priority, tags, or due date.",
+    parameters: [
+      {
+        name: "taskId",
+        type: "string",
+        description: "The ID of the task to update",
+        required: true,
+      },
+      {
+        name: "updates",
+        type: "object",
+        description: "The fields to update",
+        required: true,
+        attributes: [
+          {
+            name: "status",
+            type: "string",
+            enum: ["todo", "completed"],
+            description: "New status for the task",
+          },
+          {
+            name: "label",
+            type: "string",
+            description: "New title for the task",
+          },
+          {
+            name: "description",
+            type: "string",
+            description: "New description for the task",
+          },
+          {
+            name: "priority",
+            type: "string",
+            enum: ["low", "medium", "high"],
+            description: "New priority level for the task",
+          },
+          {
+            name: "tags",
+            type: "string[]",
+            description: "New tags for the task",
+          },
+          {
+            name: "dueDate",
+            type: "string",
+            description:
+              "New due date for the task. You can use: 'today', 'tomorrow', a date in YYYY-MM-DD format, or a full date-time in YYYY-MM-DDTHH:mm format.",
+          },
+        ],
+      },
+    ],
+    handler: async ({ taskId, updates }) => {
+      const task = tasks.find((t) => t.id === taskId);
+      if (!task) {
+        return "Task not found";
+      }
+
+      // Processa a data se foi fornecida
+      if (updates.dueDate) {
+        updates.dueDate = processCopilotDate(updates.dueDate);
+      }
+
+      await taskActions.updateTask(taskId, updates);
+      return "Task updated successfully";
     },
   });
 
