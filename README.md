@@ -12,10 +12,10 @@ A modern, AI-powered task management application built with Next.js and CopilotK
   - Title and description
   - Priority levels (low, medium, high)
   - Custom tags
-  - Due dates
+  - Due dates with smart date parsing
 - ✅ Mark tasks as completed
 - 🗑️ Delete tasks
-- 🔍 Filter tasks by status (All, Pending, Completed)
+- 🔍 Filter tasks by status, priority, and tags
 
 ### AI Integration
 
@@ -23,12 +23,21 @@ A modern, AI-powered task management application built with Next.js and CopilotK
 - 💡 Smart description auto-completion
 - 🎯 Intelligent task organization
 - 🗣️ Natural language task creation and management
+- 📅 Smart date handling with natural language support
+
+### Task Analysis & Suggestions
+
+- ⏰ Deadline monitoring and alerts
+- 📊 Task relationship analysis
+- 💭 Workflow improvement suggestions
+- 🔄 Related tasks suggestions
 
 ### Focus Mode
 
 - 👀 Toggle Focus Mode to prioritize important tasks
 - 🔝 Automatic task sorting by priority
 - 🎯 Concentrate on high-priority items
+- 📌 Pin specific tasks for focused attention
 
 ### Theme Support
 
@@ -42,6 +51,7 @@ A modern, AI-powered task management application built with Next.js and CopilotK
 - 🎭 Beautiful glassmorphism effects
 - ⚡ Real-time updates
 - 🏷️ Custom tag system with color coding
+- 📅 Dynamic date display with automatic updates
 
 ## Tech Stack
 
@@ -52,6 +62,7 @@ A modern, AI-powered task management application built with Next.js and CopilotK
 - **Icons**: Lucide Icons
 - **Date Handling**: date-fns
 - **Form Management**: React Hook Form
+- **Real-time Updates**: React Context
 
 ## Getting Started
 
@@ -68,7 +79,13 @@ cd my-turborepo
 yarn install
 ```
 
-3. Start the development server:
+3. Set up environment variables:
+
+```bash
+NEXT_PUBLIC_COPILOT_API_KEY=your_api_key_here
+```
+
+4. Start the development server:
 
 ```bash
 yarn dev
@@ -83,11 +100,14 @@ apps/copilotkit-example/
 ├── src/
 │   ├── app/              # Next.js app directory
 │   ├── components/       # React components
+│   │   ├── generative-ui/  # AI-generated UI components
+│   │   └── TaskList/      # Task management components
 │   ├── lib/
 │   │   ├── copilot/     # AI integration
 │   │   ├── features/    # Redux features
 │   │   └── store.ts     # Redux store
-│   └── providers/       # App providers
+│   ├── providers/       # App providers
+│   └── utils/          # Utility functions
 ```
 
 ## Key Components
@@ -97,6 +117,8 @@ apps/copilotkit-example/
 - **TaskDetailsModal**: Displays detailed task information
 - **CopilotStateManager**: Manages AI integration state
 - **FocusModeButton**: Controls focus mode functionality
+- **ShowSuggestions**: Displays AI-generated task suggestions
+- **DateProvider**: Manages real-time date updates
 
 ## AI Features
 
@@ -106,6 +128,19 @@ The application uses CopilotKit to provide:
 - Intelligent description completion
 - Natural language processing for task management
 - Smart task organization and prioritization
+- Deadline monitoring and alerts
+- Workflow improvement suggestions
+- Related tasks identification
+
+### Smart Date Handling
+
+The application includes sophisticated date handling capabilities:
+
+- Natural language date parsing (e.g., "today", "tomorrow")
+- Timezone-aware date management
+- Automatic end-of-day handling for deadlines
+- Real-time date updates
+- Support for various date formats (YYYY-MM-DD, YYYY-MM-DDTHH:mm)
 
 ## Contributing
 
