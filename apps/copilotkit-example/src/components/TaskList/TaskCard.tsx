@@ -2,7 +2,6 @@ import { Task } from "@/lib/features/tasks/types";
 import { useDispatch } from "react-redux";
 import { deleteTask, updateTask } from "@/lib/features/tasks/tasksSlice";
 import { useTheme } from "next-themes";
-import { format } from "date-fns";
 import { Check, Trash2 } from "lucide-react";
 import { formatDate } from "@/utils/date";
 

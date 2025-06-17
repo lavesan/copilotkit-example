@@ -3,7 +3,7 @@ import { useDispatch } from "react-redux";
 import { CopilotTextarea } from "@copilotkit/react-textarea";
 import { createTaskActions } from "@/lib/features/tasks/actions";
 import { useStore } from "react-redux";
-import { AppDispatch, RootState } from "@/lib/store";
+import { RootState } from "@/lib/store";
 import { X } from "lucide-react";
 import { useForm, Controller, SubmitHandler } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -59,7 +59,7 @@ export function TaskFormModal({ isOpen, onClose }: TaskFormModalProps) {
 
   useEffect(() => {
     reset();
-  }, [isOpen]);
+  }, [isOpen, reset]);
 
   const handleAddTag = () => {
     if (tagInput.trim() && !tags.includes(tagInput.trim())) {

@@ -1,5 +1,4 @@
 import { Task } from "@/lib/features/tasks/types";
-import { format } from "date-fns";
 import { formatDate } from "@/utils/date";
 
 interface ShowTaskProps {
@@ -12,7 +11,7 @@ interface ShowTasksProps {
   status: "running" | "complete" | "error";
 }
 
-export function ShowTask({ task, status }: ShowTaskProps) {
+export function ShowTask({ task }: ShowTaskProps) {
   const priorityColors = {
     high: "bg-red-500",
     medium: "bg-yellow-500",
