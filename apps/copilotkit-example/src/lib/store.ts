@@ -9,7 +9,7 @@ export const makeStore = () => {
     devTools: process.env.NODE_ENV !== "production",
     middleware: (getDefaultMiddleware) =>
       getDefaultMiddleware({
-        serializableCheck: false, // Desabilita o aviso de serialização para facilitar o debug
+        serializableCheck: false, // Disables serialization warning for easier debugging
       }),
   });
 };

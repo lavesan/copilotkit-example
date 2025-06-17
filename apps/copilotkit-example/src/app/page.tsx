@@ -9,7 +9,7 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-background text-foreground">
       <main className="container mx-auto px-4 py-8">
-        <TaskList />
+        <TaskList title="AI Task Planner" />
         <CopilotPopup
           instructions={COPILOT_INSTRUCTIONS}
           labels={COPILOT_LABELS}

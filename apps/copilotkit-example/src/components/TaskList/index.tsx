@@ -10,7 +10,11 @@ import { useTheme } from "next-themes";
 import { TaskCard } from "./TaskCard";
 import { TaskDetailsModal } from "./TaskDetailsModal";
 
-export function TaskList() {
+interface ITaskListProps {
+  title: string;
+}
+
+export function TaskList({ title }: ITaskListProps) {
   const tasks = useSelector(selectFilteredTasks);
   const [filter, setFilter] = useState<"all" | "pending" | "completed">("all");
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -36,7 +40,7 @@ export function TaskList() {
           <h1
             className={`text-4xl font-bold tracking-tight ${theme === "dark" ? "text-white" : "text-gray-900"}`}
           >
-            AI Task Planner
+            {title}
           </h1>
           <div className="flex items-center gap-4">
             {/* Theme Toggle Button */}

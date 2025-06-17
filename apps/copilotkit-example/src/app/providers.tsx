@@ -1,6 +1,6 @@
 "use client";
 
-import StoreProvider from "./StoreProvider";
+import StoreProvider from "../providers/StoreProvider";
 import { ThemeProvider } from "@/providers/ThemeProvider";
 import { CopilotKit } from "@copilotkit/react-core";
 

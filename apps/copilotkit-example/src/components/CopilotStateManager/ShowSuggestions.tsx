@@ -1,6 +1,5 @@
 import { Task } from "@/lib/features/tasks/types";
 import { WorkflowSuggestion } from "@/lib/copilot/automated-tasks";
-import { format } from "date-fns";
 import { formatDate } from "@/utils/date";
 
 interface ShowSuggestionsProps {
