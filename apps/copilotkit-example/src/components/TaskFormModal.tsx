@@ -90,6 +90,7 @@ export function TaskFormModal({ isOpen, onClose }: TaskFormModalProps) {
           <div className="flex justify-between items-center">
             <h2 className="text-2xl font-bold">Add New Task</h2>
             <button
+              type="button"
               onClick={onClose}
               className="p-2 hover:bg-secondary rounded-full transition-colors"
             >
@@ -250,12 +251,14 @@ export function TaskFormModal({ isOpen, onClose }: TaskFormModalProps) {
         <div className="p-6 border-t border-border">
           <div className="flex justify-end gap-3">
             <button
+              type="button"
               onClick={onClose}
               className="px-4 py-2 bg-secondary hover:bg-secondary/80 rounded-xl transition-colors"
             >
               Cancel
             </button>
             <button
+              type="submit"
               onClick={handleSubmit(onSubmit)}
               className="px-4 py-2 bg-primary text-primary-foreground hover:bg-primary/90 rounded-xl transition-colors"
             >
