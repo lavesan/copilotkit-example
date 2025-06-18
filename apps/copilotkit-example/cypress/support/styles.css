@@ -1,0 +1,4 @@
+/* Estilos básicos necessários para os testes */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;

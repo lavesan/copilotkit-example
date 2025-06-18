@@ -6,6 +6,7 @@
     "dev": "turbo run dev",
     "lint": "turbo run lint",
     "test:e2e": "turbo run test:e2e",
+    "test:component": "turbo run test:component",
     "test:e2e:dev": "turbo run test:e2e:dev",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "check-types": "turbo run check-types"

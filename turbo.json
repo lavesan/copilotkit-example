@@ -21,6 +21,10 @@
     "test:e2e:dev": {
       "cache": false
     },
+    "test:component": {
+      "dependsOn": ["^build"],
+      "outputs": ["cypress/videos/**", "cypress/screenshots/**"]
+    },
     "dev": {
       "cache": false,
       "persistent": true

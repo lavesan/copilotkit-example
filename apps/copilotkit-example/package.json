@@ -3,13 +3,15 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbopack",
+    "dev": "next dev --turbopack --port 3000",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
     "test:e2e": "cypress run",
     "test:e2e:dev": "cypress open",
-    "test:e2e:ci": "start-server-and-test dev http://localhost:3000 test:e2e"
+    "test:e2e:ci": "start-server-and-test dev http://localhost:3000 test:e2e",
+    "test:component": "cypress run --component",
+    "test:component:dev": "cypress open --component"
   },
   "dependencies": {
     "@copilotkit/react-core": "^1.8.14",
