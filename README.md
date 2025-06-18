@@ -1,148 +1,92 @@
-# AI Task Planner with CopilotKit
+# Turborepo Project
 
-A modern, AI-powered task management application built with Next.js and CopilotKit. This application combines the power of AI assistance with a beautiful, responsive user interface to help users manage their tasks efficiently.
+A monorepo built with Turborepo, containing multiple Next.js applications and shared packages.
 
-![AI Task Planner](./screenshot.png)
+## What's Inside
 
-## Features
+### Apps
 
-### Task Management
+- `copilotkit-example`: Task management application with AI features
+- `docs`: Default documentation site
+- `web`: Default web application
 
-- Create tasks with rich details:
-  - Title and description
-  - Priority levels (low, medium, high)
-  - Custom tags
-  - Due dates with smart date parsing
-- ✅ Mark tasks as completed
-- Filter tasks by status, priority, and tags
+### Packages
 
-### AI Integration
+- `ui`: Shared UI component library
+- `eslint-config`: ESLint configurations
+- `typescript-config`: TypeScript configurations
 
-- 🤖 AI-powered task suggestions
-- Smart description auto-completion
-- Intelligent task organization
-- Natural language task creation and management
-- Smart date handling with natural language support
+## Using this Monorepo
 
-### Task Analysis & Suggestions
+### Build
 
-- Deadline monitoring and alerts
-- 📊 Task relationship analysis
-- Workflow improvement suggestions
-- Related tasks suggestions
-
-### Focus Mode
-
-- Toggle Focus Mode to prioritize important tasks
-- 🎯 Concentrate on high-priority items
-- Pin specific tasks for focused attention
-
-### Theme Support
-
-- 🌓 Toggle between Light and Dark modes
-- Beautiful transitions and animations
-- Modern glassmorphism design
-
-### User Interface
-
-- Fully responsive design
-- ⚡ Real-time updates
-- Custom tag system with color coding
-- Dynamic date display with automatic updates
-
-## Tech Stack
-
-- **Frontend Framework**: Next.js
-- **State Management**: Redux
-- **AI Integration**: CopilotKit
-- **Styling**: Tailwind CSS
-- **Icons**: Lucide Icons
-- **Date Handling**: date-fns
-- **Form Management**: React Hook Form
-- **Real-time Updates**: React Context
-
-## Getting Started
-
-1. Clone the repository:
+To build all apps and packages:
 
 ```bash
-git clone https://github.com/lavesan/copilotkit-example.git
+yarn build
 ```
 
-2. Install dependencies:
+### Develop
 
-```bash
-cd copilotkit-example
-yarn install
-```
-
-3. Create a `.env` file and set up environment variables:
-
-```bash
-NEXT_PUBLIC_COPILOT_API_KEY=your_api_key_here
-```
-
-4. Start the development server:
+To develop all apps and packages:
 
 ```bash
 yarn dev
 ```
 
-The application will be available at `http://localhost:3000`.
+### Remote Caching
 
-## Project Structure
+Turborepo can use a remote cache to share build artifacts across different machines:
 
-```
-apps/copilotkit-example/
-├── src/
-│   ├── app/              # Next.js app directory
-│   ├── components/       # React components
-│   │   ├── generative-ui/  # AI-generated UI components
-│   │   └── TaskList/      # Task management components
-│   ├── lib/
-│   │   ├── copilot/     # AI integration
-│   │   ├── features/    # Redux features
-│   │   └── store.ts     # Redux store
-│   ├── providers/       # App providers
-│   └── utils/          # Utility functions
+```bash
+npx turbo login
 ```
 
-## Key Components
+## Useful Commands
 
-- **TaskList**: Main component displaying all tasks
-- **TaskFormModal**: Modal for creating new tasks
-- **TaskDetailsModal**: Displays detailed task information
-- **CopilotStateManager**: Manages AI integration state
-- **FocusModeButton**: Controls focus mode functionality
-- **ShowSuggestions**: Displays AI-generated task suggestions
-- **DateProvider**: Manages real-time date updates
+```bash
+# Install dependencies
+yarn install
 
-## AI Features
+# Run specific app
+yarn workspace <app_name> dev
 
-The application uses CopilotKit to provide:
+# Build specific app
+yarn workspace <app_name> build
 
-- Task suggestions based on context
-- Intelligent description completion
-- Natural language processing for task management
-- Smart task organization and prioritization
-- Deadline monitoring and alerts
-- Workflow improvement suggestions
-- Related tasks identification
+# Run tests
+yarn test
 
-### Smart Date Handling
+# Lint all projects
+yarn lint
+```
 
-The application includes sophisticated date handling capabilities:
+## Monorepo Structure
 
-- Natural language date parsing (e.g., "today", "tomorrow")
-- Timezone-aware date management
-- Automatic end-of-day handling for deadlines
-- Real-time date updates
-- Support for various date formats (YYYY-MM-DD, YYYY-MM-DDTHH:mm)
+```
+apps/
+  copilotkit-example/  # Task management app
+  docs/                # Documentation site
+  web/                # Main web application
+packages/
+  ui/                 # Shared components
+  eslint-config/      # ESLint configurations
+  typescript-config/  # TypeScript configurations
+```
+
+## Development Guidelines
+
+1. Use shared packages for common code
+2. Follow the established code style
+3. Write tests for new features
+4. Update documentation as needed
 
 ## Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+1. Create a feature branch
+2. Make your changes
+3. Submit a pull request
 
 ## License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+MIT

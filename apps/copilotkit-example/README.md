@@ -1,36 +1,92 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# TaskFlow AI Assistant
 
-## Getting Started
+A modern task management application enhanced with AI capabilities using CopilotKit.
 
-First, run the development server:
+## Features
+
+- Task Management with AI assistance
+- Smart task suggestions and automation
+- Focus mode for better productivity
+- Dark/Light theme support
+- Real-time AI suggestions for task descriptions
+- Priority-based task organization
+- Tag-based task categorization
+- Due date management with smart date parsing
+
+## Tech Stack
+
+- Next.js 14 with App Router
+- TypeScript
+- Redux Toolkit for state management
+- CopilotKit for AI features
+- TailwindCSS for styling
+- React Hook Form for form management
+- date-fns for date handling
+
+## Development
 
 ```bash
-npm run dev
-# or
+# Install dependencies
+yarn install
+
+# Run development server
 yarn dev
-# or
-pnpm dev
-# or
-bun dev
+
+# Build for production
+yarn build
+
+# Run production server
+yarn start
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Project Structure
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```
+src/
+  app/              # Next.js app router files
+  components/       # React components
+    CopilotStateManager/  # AI features management
+    TaskList/      # Task-related components
+  lib/
+    copilot/       # AI configuration and prompts
+    features/      # Redux features
+    store.ts       # Redux store configuration
+  utils/           # Utility functions
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Testing
 
-## Learn More
+The project uses Cypress for E2E testing. Tests are organized in the following structure:
 
-To learn more about Next.js, take a look at the following resources:
+```
+cypress/
+  e2e/            # End-to-end test files
+  fixtures/       # Test data
+  support/        # Test utilities and commands
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+To run tests:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```bash
+# Run tests in headless mode
+yarn test:e2e
 
-## Deploy on Vercel
+# Run tests with UI
+yarn test:e2e:dev
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Environment Variables
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```env
+NEXT_PUBLIC_COPILOT_API_KEY=your_api_key_here
+```
+
+## Contributing
+
+1. Create a feature branch
+2. Make your changes
+3. Submit a pull request
+
+## License
+
+MIT
