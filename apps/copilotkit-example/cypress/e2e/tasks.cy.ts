@@ -18,8 +18,6 @@ describe("Task Management", () => {
 
     cy.createTask(task);
 
-    cy.screenshot("after-create-task");
-
     // Verify task was created with all details
     cy.contains(task.label)
       .should("be.visible")
