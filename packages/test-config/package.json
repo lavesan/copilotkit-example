@@ -1,0 +1,20 @@
+{
+  "name": "@repo/test-config",
+  "version": "0.0.0",
+  "private": true,
+  "license": "MIT",
+  "files": [
+    "cypress.config.ts",
+    "cypress"
+  ],
+  "scripts": {
+    "lint": "eslint ."
+  },
+  "devDependencies": {
+    "@repo/eslint-config": "*",
+    "@repo/typescript-config": "*",
+    "cypress": "^13.6.4",
+    "@testing-library/cypress": "^10.0.1",
+    "typescript": "^5.3.3"
+  }
+}

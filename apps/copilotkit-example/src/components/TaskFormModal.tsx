@@ -47,7 +47,7 @@ export function TaskFormModal({ isOpen, onClose }: TaskFormModalProps) {
     formState: { errors },
     reset,
   } = useForm<TaskFormData>({
-    resolver: yupResolver<TaskFormData, any, any>(schema),
+    resolver: yupResolver(schema),
     defaultValues: {
       priority: "medium",
       tags: [],
