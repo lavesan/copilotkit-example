@@ -6,9 +6,7 @@ A monorepo built with Turborepo, containing multiple Next.js applications and sh
 
 ### Apps
 
-- `copilotkit-example`: Task management application with AI features
-- `docs`: Default documentation site
-- `web`: Default web application
+- `todo-list`: Task management application with AI features
 
 ### Packages
 
@@ -65,9 +63,7 @@ yarn lint
 
 ```
 apps/
-  copilotkit-example/  # Task management app
-  docs/                # Documentation site
-  web/                # Main web application
+  todo-list/  # Task management app
 packages/
   ui/                 # Shared components
   eslint-config/      # ESLint configurations
